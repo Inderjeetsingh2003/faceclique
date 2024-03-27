@@ -10,5 +10,16 @@ const profschema=new mongoose.Schema({
         required:true,
         unique:true
     },
-    
+    department:{
+        type:String,
+        required:true
+    },
+    contact:
+    {
+        type:String,
+
+    }
+},
+{
+     timestamps:true
 })

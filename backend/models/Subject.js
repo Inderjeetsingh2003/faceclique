@@ -16,6 +16,10 @@ const subjectschema=new mongoose.Schema({
     semester:{
         type:String,
         required:true
+    },
+    teahcer:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'prof'
     }
    
 },{
