@@ -1,5 +1,14 @@
 const mongoose=require("mongoose")
+const {Schema}=mongoose
 const subjectschema=new mongoose.Schema({
+    
+    professorId:{
+        type:String,
+        default:null,
+        ref:'Prof'
+    }, 
+    
+    
     subjectcode:{
         type:String,
         required:true
