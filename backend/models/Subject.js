@@ -26,16 +26,13 @@ const subjectschema=new mongoose.Schema({
         type:String,
         required:true
     },
-    teahcer:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'prof'
-    }
+    
    
 },{
     
         timestamps:true
     
 })
-
+ 
 const Subject=mongoose.model("subject",subjectschema)
 module.exports=Subject

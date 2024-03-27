@@ -9,9 +9,9 @@ const Subject=require('../models/Subject')
 const registerprof=(async(req,res)=>
 {
  const{profId, name, email, subjects, department}=req.body
+ console.log(req.body)
  try{
-
-     const profex= await Subject.findOne({profId:req.body.profId})
+     const profex= await Prof.findOne({profId:req.body.profId})
      if(profex)
      {
         return res.status(200).send("subject already exists")
@@ -20,16 +20,6 @@ const registerprof=(async(req,res)=>
         profId, name, email, subjects, department
      })
      await professor.save()
-
-     for (const subjectCode of subjects) {
-        console.log(subjectCode)
-        console.log(profId)
-        await Subject.updateMany(
-            
-            { subjectcode: subjectCode },
-            { $set: { professorId: profId } } 
-        );
-    }
     
      return res.status(200).send("Professor added successfully")
  }
