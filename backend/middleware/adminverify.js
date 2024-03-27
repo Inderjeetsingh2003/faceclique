@@ -5,7 +5,8 @@ const fetchadmin=(req,res,next)=>
 {
     
 
-        const token=res.header('action-token')
+        const token=req.header('action-token')
+        console.log(token)
         if(!token)
         {
             return res.status(401).send("invalid token")
@@ -24,4 +25,4 @@ const fetchadmin=(req,res,next)=>
     }
 
 }
-module.export=fetchadmin;
+module.exports=fetchadmin;
