@@ -6,5 +6,5 @@ mongoose.connect('mongodb+srv://rahul6005:rahul2003@cluster0.pj579.mongodb.net/f
     console.log("connection is successfull")
 }).catch((e)=>
 {
-    console.log("connection not possible",e)
+    console.log("connection not possible",)
 })
