@@ -8,6 +8,7 @@ app.use(express.json())
 //extablashing the routes
 app.use('/admin',require(path.join(__dirname,'./routes/adminauth.js')))
 app.use('/sub',require(path.join(__dirname,"./routes/subject.js")))
+app.use('/prof',require(path.join(__dirname,"./routes/professor.js")))
 
 //to accept the incoming json
 
