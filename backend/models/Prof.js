@@ -1,4 +1,4 @@
-const setonsave=require("../middleware/profsublink")
+const {setonsave,emptyondelete}=require("../middleware/profsublink")
 const mongoose=require('mongoose')
 const Profschema=new mongoose.Schema({
     
@@ -30,5 +30,11 @@ const Profschema=new mongoose.Schema({
     
 })
 Profschema.post('save',setonsave)
+//Profschema.post('findOneAndDelete',async function(doc)
+//{
+  //  let professor=doc.profId;
+    //emptyondelete(professor.profId)
+//}) //explectively bindling the current data
+
 const Prof=mongoose.model("Prof",Profschema)
 module.exports=Prof
