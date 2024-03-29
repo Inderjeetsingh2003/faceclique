@@ -1,6 +1,5 @@
 const mongoose=require("mongoose")
-const{setsubinstudent}=require('../middleware/profsublink')
-const Subject=require("../models/Subject")
+const Subject=require('../models/Subject')
 const studentschema=mongoose.Schema({
     name:{
         type:String,

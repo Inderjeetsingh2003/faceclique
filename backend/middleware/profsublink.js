@@ -6,7 +6,7 @@ const setonsave=async function(doc)
     {
         try{
 
-            await Subject.updateMany({ subjectname:{$in:doc.subjects}},{$set:{professorId:doc.profId}})
+            await Subject.updateMany({subjectcode :{$in:doc.subjects}},{$set:{professorId:doc.profId}})
             console.log("subject linked ot prof")
         }
         catch(error)
