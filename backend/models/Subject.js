@@ -35,18 +35,22 @@ const subjectschema=new mongoose.Schema({
     
 })
  
-//logic error
+//logic error is resolved here, On adding subject, it gets stored in the students that match the department and semester.
 subjectschema.post('save',async function()
 {
  try{   
   const avastudent=await Student.find({department:this.department,semester:this.semester})
+  console.log(avastudent)
   console.log("hello this is triggered")
 await Promise.all(avastudent.map(async(stu)=>
 {
+    console.log("Inside promise")
     if(!stu.subjectcode.includes(this._id))
     {
-        stu.subjectcode.push(this._id);
-        await stu.save()
+        await Student.updateOne(
+            { _id: stu._id },
+            { $push: { subjectcode: this._id } }
+        );
     }
 }))
   
