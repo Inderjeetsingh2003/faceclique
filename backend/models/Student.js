@@ -1,6 +1,5 @@
 const mongoose=require("mongoose")
-const Subject=require('../models/Subject')
-const express=require("express")
+const Subject=require('../models/Subject.js')
 const studentschema=mongoose.Schema({
     name:{
         type:String,

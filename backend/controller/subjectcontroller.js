@@ -30,4 +30,20 @@ const registersub=(async(req,res)=>
 
 })
 
-module.exports={registersub}
+
+//deleting the subject
+
+const deletesub=(async(req,res)=>
+{
+   const subtodelte=await Subject.findById(req.params.id)
+   if(!subtodelte)
+   {
+      return res.status(404).send("subject not found")
+   }
+   await Subject.findByIdAndDelete(req.params.id)
+   return res.status(200).send("subject deleted successfully")
+
+   
+})
+
+module.exports={registersub,deletesub}

@@ -35,30 +35,19 @@ const subjectschema=new mongoose.Schema({
     
 })
  
-//logic error is resolved here, On adding subject, it gets stored in the students that match the department and semester.
+//logic error
+//adding the of the added subejct code to students,which belong to the same semester
+
 subjectschema.post('save',async function()
 {
- try{   
-  const avastudent=await Student.find({department:this.department,semester:this.semester})
-  console.log(avastudent)
-  console.log("hello this is triggered")
-await Promise.all(avastudent.map(async(stu)=>
+   await Student.updateMany({department:this.department,semester:this.semester},{$addToSet:{subjectcode:this._id}},{multi:true})
+})
+
+//removing the subject code from students when a subject is deleted
+subjectschema.post('findOneAndDelete',async function(doc)
 {
-    console.log("Inside promise")
-    if(!stu.subjectcode.includes(this._id))
-    {
-        await Student.updateOne(
-            { _id: stu._id },
-            { $push: { subjectcode: this._id } }
-        );
-    }
-}))
-  
-} 
-catch(error)
-{
-    console.log(error.message)
-}
+   console.log("subject delete middleware is triggered")
+    await Student.updateMany({semester:doc.semester,department:doc.department},{$pull:{subjectcode:doc._id}},{multi:true})
 })
 
 const Subject=mongoose.model("subject",subjectschema)
