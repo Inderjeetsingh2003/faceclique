@@ -50,5 +50,6 @@ subjectschema.post('findOneAndDelete',async function(doc)
     await Student.updateMany({semester:doc.semester,department:doc.department},{$pull:{subjectcode:doc._id}},{multi:true})
 })
 
+
 const Subject=mongoose.model("subject",subjectschema)
 module.exports=Subject

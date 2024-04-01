@@ -1,5 +1,5 @@
 const mongoose=require("mongoose")
-const Subject=require('../models/Subject.js')
+const Subject=require('../models/Subject')
 const studentschema=mongoose.Schema({
     name:{
         type:String,
@@ -51,6 +51,16 @@ const studentschema=mongoose.Schema({
 //     }
 // });
 
-
+studentschema.pre('save', async function(next) {
+    try {
+        console.log(Subject)
+        const subjects = await Subject.find({ department: this.department, semester: this.semester });
+        console.log(subjects)
+        this.subjectcode = subjects.map(subject => subject._id);
+        next();
+    } catch (error) {
+        next(error);
+    }
+});
 const Student=mongoose.model("student",studentschema)
 module.exports=Student;
