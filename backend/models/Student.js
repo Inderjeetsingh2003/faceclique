@@ -29,7 +29,8 @@ const studentschema=mongoose.Schema({
         ref: 'Subject'
     }]
 })
-// studentschema.pre('updateMany', async function() {
+
+// studentschema.pre('save', async function() {
 //     try {
 //         console.log("Student");
 //         const subjects = await Subject.find({ department: this.department, semester: this.semester });
