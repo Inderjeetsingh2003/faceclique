@@ -7,7 +7,7 @@ const registerstudent=(async(req,res)=>
 {
     const{name,email,studentid,department,semester}=req.body
     try{
-    const exstudent=await Student.findOne({email})
+    const exstudent=await Student.findOne({studentid})
     if(exstudent)
     {
         return res.status(200).send("student already exists")

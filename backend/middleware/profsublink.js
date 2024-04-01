@@ -1,5 +1,8 @@
+///NOT USED....!
+
+
 const express=require("express")
-const Subject=require('../models/Subject')
+const {Subject}=require('../models/Subject')
 const setonsave=async function(doc)
 {
     if(doc&&doc.subjects&&doc.subjects.length>0)
