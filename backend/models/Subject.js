@@ -39,6 +39,7 @@ const subjectschema=new mongoose.Schema({
  
 //logic error
 //adding the of the added subejct code to students,which belong to the same semester
+/*
 subjectschema.post('save',async function()
 {
     //stuupdate(this.semester,this.department,this._id)
@@ -47,10 +48,12 @@ subjectschema.post('save',async function()
     console.log(Student)
     await Student.updateMany({department:this.department,semester:this.semester},{$addToSet:{subjectcode:this._id}},{multi:true})
 })
+*/
 
 //removing the subject code from students when a subject is deleted
 //PENDING
-subjectschema.pre('findOneAndDelete',async function()
+
+/*subjectschema.pre('findOneAndDelete',async function()
 {
     const {Student}= await require("../models/Student")
    console.log("subject delete middleware is triggered")
@@ -58,6 +61,7 @@ subjectschema.pre('findOneAndDelete',async function()
    const{semester,department}=subject
     await Student.updateMany({semester,department},{$pull:{subjectcode:doc._id}},{multi:true})
 })
+*/
 
 
 

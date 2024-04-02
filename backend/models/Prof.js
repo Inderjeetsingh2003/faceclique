@@ -30,6 +30,8 @@ const Profschema=new mongoose.Schema({
     
 })
 Profschema.post('save',setonsave)
+
+
 //Profschema.post('findOneAndDelete',async function(doc)
 //{
   //  let professor=doc.profId;
