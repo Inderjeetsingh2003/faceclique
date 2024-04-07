@@ -1,5 +1,6 @@
 const express=require("express")
 const Student=require('../models/Student')
+const Subject=require('../models/Subject')
 const {addstud,updatestu}=require("../middleware/profsublink")
 
 //registering the student

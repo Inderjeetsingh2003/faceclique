@@ -1,1 +1,5 @@
-face_detector = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+from sklearn.neighbors import KNeighborsClassifier
+import cv2
+import pickle
+import numpy as np
+import os
