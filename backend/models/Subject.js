@@ -67,5 +67,6 @@ subjectschema.post('save',async function()
 
 
 
+
 const Subject=mongoose.model("subject",subjectschema)
 module.exports=Subject
