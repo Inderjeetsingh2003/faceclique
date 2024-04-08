@@ -10,6 +10,7 @@ app.use('/admin',require(path.join(__dirname,'./routes/adminauth.js')))
 app.use('/sub',require(path.join(__dirname,"./routes/subject.js")))
 app.use('/prof',require(path.join(__dirname,"./routes/professor.js")))
 app.use('/student',require(path.join(__dirname,"./routes/student.js")))
+app.use('/recognize',require(path.join(__dirname,'./routes/facerecognisation.js')))
 
 //to accept the incoming json
 
