@@ -57,7 +57,7 @@ const markattandance = async (req, res) => {
 
    let tempattandance = await Attandance.findOne({
       studentrefid,
-      "attendance.subjectid": subjectid,
+  
     });
 
     if (!tempattandance) {
