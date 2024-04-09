@@ -68,4 +68,43 @@ const updatestudent=(async(req,res)=>
     }
 
 })
-module.exports={registerstudent,updatestudent}
+
+const getstudent=(async(req,res)=>{
+
+    try {
+    
+
+    const student= await Student.findById(req.params.id);
+
+    if (!student) {
+        return res.status(404).send("Student not found");
+    }
+    
+    const subjectcode=student.subjectcode;
+
+    const subjectNames = [];
+
+        for (let i = 0; i < subjectcode.length; i++) {
+            const subjectId = subjectcode[i];
+            try {
+                const subject = await Subject.findById(subjectId);
+                // console.log(subject)
+                const subjectName = subject ? subject.subjectname : null;
+                subjectNames.push(subjectName);
+            } catch (error) {
+                console.error(`Error fetching subject with ID ${subjectId}:`, error);
+                subjectNames.push(null);
+            }
+        }
+
+        console.log(subjectNames);
+
+
+    return res.status(200).send(subjectNames)
+   
+}
+catch(error){
+    console.log(error.message)
+}
+})
+module.exports={registerstudent,updatestudent, getstudent}

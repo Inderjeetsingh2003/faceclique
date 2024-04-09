@@ -55,4 +55,8 @@ const deleteprof=(async(req,res)=>
    }
 })
 
-module.exports={registerprof,deleteprof}
+const getprof=(async(req,res)=>{
+   
+})
+
+module.exports={registerprof,deleteprof, getprof}
