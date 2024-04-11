@@ -12,6 +12,10 @@ const studentschema=mongoose.Schema({
         required:true,
         unique:true
     },
+    password:{
+        type:String,
+        required:true
+    },
     studentid:{
         type:String,
         required:true

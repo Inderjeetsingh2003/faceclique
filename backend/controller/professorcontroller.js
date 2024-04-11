@@ -3,13 +3,18 @@ const Admin=require('../models/Admin')
 const Prof=require('../models/Prof')
 const Subject=require('../models/Subject')
 const {emptyondelete}=require('../middleware/profsublink')
+const bcrypt=require("bcrypt")
+const jwt=require("jsonwebtoken")
+
+const TOKEN_SECRET="INDERJEET SINGH"
 //@desc registering professor
 //@route POST/prof/
 //@access public
 
 const registerprof=(async(req,res)=>
 {
- const{profId, name, email, subjects, department}=req.body
+  
+ const{profId, name, email, subjects, department,password}=req.body
  console.log(req.body)
  try{
      const profex= await Prof.findOne({profId:req.body.profId})
@@ -17,8 +22,10 @@ const registerprof=(async(req,res)=>
      {
         return res.status(200).send("subject already exists")
      }
+     const salt=await bcrypt.genSalt(10)
+     const hashpassword=await bcrypt.hash(password,salt)
      const professor= new Prof({
-        profId, name, email, subjects, department
+        profId, name, email, subjects, department,password:hashpassword
      })
      await professor.save()
     
@@ -60,4 +67,41 @@ const getprof=(async(req,res)=>{
    
 })
 
-module.exports={registerprof,deleteprof, getprof}
+const proflogin=(async(req,res)=>
+{
+
+let success;
+    try{
+        const{profId,password}=req.body
+        console.log(profId,password)
+        const prof=await Prof.findOne({profId})
+        if(!prof)
+        {
+            
+            return res.status(404).json({error:"invalid credintals"})
+        }
+        const comparepassword=await bcrypt.compare(password,prof.password)
+        if(!comparepassword)
+        {
+            return res.status(404).json({error:"invalid credintals"})
+    
+        }
+        const data={
+            prof:{
+                id:prof.id
+            }
+        }
+    const accesstoken=await jwt.sign(data,TOKEN_SECRET)
+    
+     success=true;
+    return res.status(200).json({success,accesstoken})
+    }
+    catch(error)
+    {
+        console.log("invalid to login")
+        console.log(error.message)
+        return res.status(500).json("internal server error but this is triggered")
+    }
+   
+})
+module.exports={registerprof,deleteprof, getprof,proflogin}

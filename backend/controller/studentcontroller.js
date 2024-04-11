@@ -2,19 +2,27 @@ const express=require("express")
 const Student=require('../models/Student')
 const Subject=require('../models/Subject')
 const {addstud,updatestu}=require("../middleware/profsublink")
+const bcrypt=require("bcrypt")
+const jwt=require("jsonwebtoken")
+
+const TOKEN_SECRET="INDERJEET SINGH"
 
 //registering the student
 const registerstudent=(async(req,res)=>
 {
-    const{name,email,studentid,department,semester}=req.body
+    const{name,email,studentid,department,semester,password}=req.body
     try{
     const exstudent=await Student.findOne({studentid})
     if(exstudent)
     {
-        return res.status(200).send("student already exists")
+        return res.status(200).json({error:"student already exists"})
     }
+
+    const salt=await bcrypt.genSalt(10)
+    const hashpassword=await bcrypt.hash(password,salt)
+
    const newstudent=new Student({
-        name,email,studentid,department,semester
+        name,email,studentid,department,semester,password:hashpassword
     })
     addstud(newstudent.semester,newstudent.department)
    await newstudent.save()
@@ -107,4 +115,41 @@ catch(error){
     console.log(error.message)
 }
 })
-module.exports={registerstudent,updatestudent, getstudent}
+
+
+const studentlogin=(async(req,res)=>
+{
+    let success;
+    try{
+        const{studentid,password}=req.body
+        console.log(studentid,password)
+        const student=await Student.findOne({studentid})
+        if(!student)
+        {
+            return res.status(404).json({error:"invalid credintals"})
+        }
+        const comparepassword=await bcrypt.compare(password,student.password)
+        if(!comparepassword)
+        {
+            return res.status(404).json({error:"invalid credintals"})
+    
+        }
+        const data={
+            student:{
+                id:student.id
+            }
+        }
+    const accesstoken=await jwt.sign(data,TOKEN_SECRET)
+    success=true
+    return res.status(200).json({success,accesstoken})
+    }
+    catch(error)
+    {
+        console.log("invalid to login")
+        console.log(error.message)
+        return res.status(500).json("internal server error")
+    }
+   
+    
+})
+module.exports={registerstudent,updatestudent, getstudent,studentlogin}
