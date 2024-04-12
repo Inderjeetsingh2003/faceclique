@@ -90,25 +90,25 @@ const getstudent=(async(req,res)=>{
     
     const subjectcode=student.subjectcode;
 
-    const subjectNames = [];
+    const subjectCodes = [];
 
         for (let i = 0; i < subjectcode.length; i++) {
             const subjectId = subjectcode[i];
             try {
                 const subject = await Subject.findById(subjectId);
                 // console.log(subject)
-                const subjectName = subject ? subject.subjectname : null;
-                subjectNames.push(subjectName);
+                const subjectCode = subject ? subject.subjectcode : null;
+                subjectCodes.push(subjectCode);
             } catch (error) {
                 console.error(`Error fetching subject with ID ${subjectId}:`, error);
-                subjectNames.push(null);
+                subjectCodes.push(null);
             }
         }
 
-        console.log(subjectNames);
+        console.log(subjectCodes);
 
 
-    return res.status(200).send(subjectNames)
+    return res.status(200).send(subjectCodes)
    
 }
 catch(error){
