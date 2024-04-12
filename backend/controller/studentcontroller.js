@@ -5,7 +5,7 @@ const {addstud,updatestu}=require("../middleware/profsublink")
 const bcrypt=require("bcrypt")
 const jwt=require("jsonwebtoken")
 
-const TOKEN_SECRET="INDERJEET SINGH"
+const ACCESS_TOKEN_SECRET="facecliqueproject"  
 
 //registering the student
 const registerstudent=(async(req,res)=>
@@ -55,6 +55,7 @@ catch(error)
 
 const updatestudent=(async(req,res)=>
 {
+    let success;
     const{newsemester}=req.body
     try{
 
@@ -77,38 +78,26 @@ const updatestudent=(async(req,res)=>
 
 })
 
-const getstudent=(async(req,res)=>{
+const getstudentsub=(async(req,res)=>{
 
     try {
     
 
-    const student= await Student.findById(req.params.id);
+    const student= await Student.findById(req.user.id);
 
     if (!student) {
         return res.status(404).send("Student not found");
     }
     
-    const subjectcode=student.subjectcode;
+    const{semester,department}=student
+    const subjects=await Subject.find({semester,department})
+    if(!subjects)
+    {
+        return res.status(404).json({error:"subjects not found"})
+    }
+    success=1;
+    return res.status(200).json({success,subjects})
 
-    const subjectNames = [];
-
-        for (let i = 0; i < subjectcode.length; i++) {
-            const subjectId = subjectcode[i];
-            try {
-                const subject = await Subject.findById(subjectId);
-                // console.log(subject)
-                const subjectName = subject ? subject.subjectname : null;
-                subjectNames.push(subjectName);
-            } catch (error) {
-                console.error(`Error fetching subject with ID ${subjectId}:`, error);
-                subjectNames.push(null);
-            }
-        }
-
-        console.log(subjectNames);
-
-
-    return res.status(200).send(subjectNames)
    
 }
 catch(error){
@@ -123,23 +112,23 @@ const studentlogin=(async(req,res)=>
     try{
         const{studentid,password}=req.body
         console.log(studentid,password)
-        const student=await Student.findOne({studentid})
-        if(!student)
+        const user=await Student.findOne({studentid})
+        if(!user)
         {
             return res.status(404).json({error:"invalid credintals"})
         }
-        const comparepassword=await bcrypt.compare(password,student.password)
+        const comparepassword=await bcrypt.compare(password,user.password)
         if(!comparepassword)
         {
             return res.status(404).json({error:"invalid credintals"})
     
         }
         const data={
-            student:{
-                id:student.id
+            user:{
+                id:user.id
             }
         }
-    const accesstoken=await jwt.sign(data,TOKEN_SECRET)
+    const accesstoken=await jwt.sign(data,ACCESS_TOKEN_SECRET)
     success=true
     return res.status(200).json({success,accesstoken})
     }
@@ -152,4 +141,4 @@ const studentlogin=(async(req,res)=>
    
     
 })
-module.exports={registerstudent,updatestudent, getstudent,studentlogin}
+module.exports={registerstudent,updatestudent, getstudentsub,studentlogin}
