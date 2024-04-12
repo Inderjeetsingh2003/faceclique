@@ -14,6 +14,7 @@ const fetchadmin=(req,res,next)=>
         try{
 
             const data=jwt.verify(token,ACCESS_TOKEN_SECRET)
+            req.user=data.user
             
             next()
         }
