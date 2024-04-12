@@ -22,9 +22,9 @@ const markattandance = async (req, res) => {
     //fething the correspondingdata to from the Subejct and Student schema
     const student = await Student.findOne({
       studentid: response.data.recognized_face,
-    });
+    });  
     if (!student) {
-      res
+      res 
         .status(404)
         .send(
           "student not found,please add the student before taking attandance"

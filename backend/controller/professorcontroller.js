@@ -6,7 +6,7 @@ const {emptyondelete}=require('../middleware/profsublink')
 const bcrypt=require("bcrypt")
 const jwt=require("jsonwebtoken")
 
-const TOKEN_SECRET="INDERJEET SINGH"
+const ACCESS_TOKEN_SECRET="facecliqueproject"   
 //@desc registering professor
 //@route POST/prof/
 //@access public
@@ -74,24 +74,25 @@ let success;
     try{
         const{profId,password}=req.body
         console.log(profId,password)
-        const prof=await Prof.findOne({profId})
-        if(!prof)
+        const user=await Prof.findOne({profId})
+        if(!user)
         {
             
             return res.status(404).json({error:"invalid credintals"})
         }
-        const comparepassword=await bcrypt.compare(password,prof.password)
+        const comparepassword=await bcrypt.compare(password,user.password)
         if(!comparepassword)
         {
             return res.status(404).json({error:"invalid credintals"})
     
         }
         const data={
-            prof:{
-                id:prof.id
+            user:{
+                id:user.id
             }
         }
-    const accesstoken=await jwt.sign(data,TOKEN_SECRET)
+        console.log(data)
+    const accesstoken=await jwt.sign(data,ACCESS_TOKEN_SECRET)
     
      success=true;
     return res.status(200).json({success,accesstoken})
@@ -104,4 +105,40 @@ let success;
     }
    
 })
-module.exports={registerprof,deleteprof, getprof,proflogin}
+
+const getprofsub=(async(req,res)=>{
+
+    try {
+    
+    const professor= await Prof.findById(req.user.id);
+    console.log(professor)
+    if (!professor) { 
+        return res.status(404).send("professor not found");
+    }
+
+    
+    
+    const profId=professor.profId
+    console.log(profId)
+    const subjects= await Subject.find({professorId:profId})
+    if(!subjects)
+    {
+        return res.status(404).json({error:"subjects not found"})
+    }
+    console.log(subjects)
+  
+    return res.status(200).json(subjects) 
+
+   
+} 
+catch(error){
+    console.log(error)
+    console.log(error.message)
+}
+})
+
+
+
+
+
+module.exports={registerprof,deleteprof, getprofsub,proflogin}
