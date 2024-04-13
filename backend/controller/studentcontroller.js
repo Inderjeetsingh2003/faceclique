@@ -96,7 +96,7 @@ const getstudentsub=(async(req,res)=>{
         return res.status(404).json({error:"subjects not found"})
     }
     success=1;
-    return res.status(200).json({success,subjects})
+    return res.status(200).json(subjects)
 
    
 }

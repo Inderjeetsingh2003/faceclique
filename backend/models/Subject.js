@@ -29,6 +29,15 @@ const subjectschema=new mongoose.Schema({
         type:String,
         required:true
     },
+    credits:{
+        type:String,
+        required:true
+    },
+    totalhours:{
+        type:String,
+        require:true
+    }
+
     
    
 },{

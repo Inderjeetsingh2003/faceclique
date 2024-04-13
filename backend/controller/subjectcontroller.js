@@ -8,7 +8,7 @@ const{removesub,addsub}=require("../middleware/profsublink")
 //@access public
 const registersub=(async(req,res)=>
 {
- const{subjectcode,subjectname,department,semester}=req.body
+ const{subjectcode,subjectname,department,semester,credits,totalhours}=req.body
  try{
 
      const subex= await Subject.findOne({subjectcode:req.body.subjectcode})
@@ -17,7 +17,7 @@ const registersub=(async(req,res)=>
         return res.status(200).send("subject already exists")
      }
      const subject= new Subject({
-        subjectcode,subjectname,department,semester
+        subjectcode,subjectname,department,semester,credits,totalhours
      })
      await subject.save()
      addsub(subject.semester,subject.department,subject._id)
