@@ -116,4 +116,43 @@ const markattandance = async (req, res) => {
   }
 };
 
-module.exports = { markattandance };
+
+
+//gettting the attandance of the student for the current subject
+
+const getattandace=(async(req,res)=>
+{
+  let success=false;
+  try{
+    console.log(req.user.id)
+    const{subjectrefid}=req.body
+    const studentattandace=await Attandance.findOne({studentrefid:req.user.id})
+    if(!studentattandace)
+    {
+      return res.status(404).send("no student attandance exits")
+    }
+
+  
+    //console.log(studentattandace)
+    const subjectattandance= studentattandace.attendance.find(entry=>entry.subjectid.toString()===subjectrefid)
+    if(!subjectattandance)
+    {
+      return res.status(404).json({success,"message":"subject do not found"})
+    }
+    //console.log(subjectattandance.entires)
+    success=true
+    return res.status(200).json({success,subjectattandance})
+
+
+  }
+  catch(error)
+  {
+    console.log(error.message)
+    return res.status(500).send("internal server error")
+  }
+
+
+
+})
+
+module.exports = { markattandance,getattandace };

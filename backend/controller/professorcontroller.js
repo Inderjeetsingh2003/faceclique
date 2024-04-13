@@ -78,12 +78,12 @@ let success;
         if(!user)
         {
             
-            return res.status(404).json({error:"invalid credintals"})
+            return res.status(404).json({error:"invalid credintals user not found"})
         }
         const comparepassword=await bcrypt.compare(password,user.password)
         if(!comparepassword)
         {
-            return res.status(404).json({error:"invalid credintals"})
+            return res.status(404).json({error:"invalid credintals password different"})
     
         }
         const data={
@@ -92,7 +92,7 @@ let success;
             }
         }
         console.log(data)
-    const accesstoken=await jwt.sign(data,ACCESS_TOKEN_SECRET)
+    const accesstoken=jwt.sign(data,ACCESS_TOKEN_SECRET)
     
      success=true;
     return res.status(200).json({success,accesstoken})
