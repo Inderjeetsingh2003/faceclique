@@ -5,6 +5,7 @@ const express=require("express")
 const Subject=require('../models/Subject')
 const Student=require("../models/Student")
 //const Prof = require("../models/Prof")
+const Attandance=require("../models/Attandance")
 
 //for professor
 const setonsave=async function(doc)
@@ -84,4 +85,28 @@ const updatestu=async(semester,department,nextsemester)=>
   return subject_id
 }
 
-module.exports={setonsave,emptyondelete,removesub,addsub,addstud,updatestu}
+
+
+//adding the student in the attandance schema whenever an student is being added
+const addinattandance=async(studentid,studentrefid)=>
+{
+    try{
+        let tempattandance=await Attandance.findOne({studentid})
+        if(tempattandance)
+        {
+            return res.status(200).send("student alreaddy exits in schema")
+        }
+        tempattandance=new Attandance({
+            studentrefid,studentid
+    
+        })
+        await tempattandance.save()
+            console.log("this addinattandance called")
+    }
+  catch(error)
+  {
+    console.log(error.message)
+    return res.status(500).send("internal server error")
+  }
+}
+module.exports={setonsave,emptyondelete,removesub,addsub,addstud,updatestu,addinattandance}

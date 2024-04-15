@@ -1,1 +1,1 @@
-/recognize
+from io import BytesIO

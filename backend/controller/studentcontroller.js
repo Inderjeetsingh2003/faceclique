@@ -1,7 +1,7 @@
 const express=require("express")
 const Student=require('../models/Student')
 const Subject=require('../models/Subject')
-const {addstud,updatestu}=require("../middleware/profsublink")
+const {addstud,updatestu,addinattandance}=require("../middleware/profsublink")
 const bcrypt=require("bcrypt")
 const jwt=require("jsonwebtoken")
 
@@ -26,13 +26,11 @@ const registerstudent=(async(req,res)=>
     })
     addstud(newstudent.semester,newstudent.department)
    await newstudent.save()
-   console.log({department, semester})
-
-   console.log("Student");
-        const subjects = await Subject.find({ department: department, semester: semester });
-        console.log(subjects);
-
-        // Extract subject codes from fetched subjects
+   console.log("student saved successfully")
+  // console.log({department, semester})
+            addinattandance(newstudent.studentid,newstudent._id)
+  
+      /*  // Extract subject codes from fetched subjects
         const subjectCodes = subjects.map(subject => subject._id);
 
         // Update students matching department and semester
@@ -40,10 +38,12 @@ const registerstudent=(async(req,res)=>
             { department: department, semester: semester },
             { $addToSet: { subjectcode: { $each: subjectCodes } } }
         );
+        */
 
-        console.log("Students subjects updated successfully");
+
+       // console.log("Students subjects updated successfully");
        
-    return res.status(200).send("student saved successfully")
+    return res.status(200).send("student saved successfully in student schema and in attandance scheam")
 }
 catch(error)
 {

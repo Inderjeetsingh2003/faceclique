@@ -5,11 +5,11 @@ const entryschema= new mongoose.Schema
 ({
     date:{
         type:Date,
-        required:true
+        
     },
     status:{
         type:String,
-        required:true
+      
     }
 })
 
@@ -28,7 +28,7 @@ const subjectattandanceSchema= new mongoose.Schema(
        },
        subjectname:{
         type:String,
-        required:true
+        
        },
        entires:[entryschema]
        
@@ -43,7 +43,7 @@ const attandanceschema=new mongoose.Schema({
     },
     studentid:{
         type:String,
-        required:true
+       required:true
     },
     attendance:[subjectattandanceSchema]
 })
