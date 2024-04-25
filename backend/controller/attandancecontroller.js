@@ -171,4 +171,71 @@ const getattandace=(async(req,res)=>
 
 })
 
-module.exports = { markattandance,getattandace };
+
+//getting the subject attandance for the proffsor
+
+const getattandaceprof=(async(req,res)=>
+{
+  try{
+
+    const {subjectcode}=req.body
+    //using the aggregrate pipelines to reduce the load at the server side
+
+    const availableattandace=await Attandance.aggregate([
+      {
+        $match:{"attendance.subjectcode":subjectcode}
+      },
+      {
+        $unwind:"$attendance"
+      },
+      {
+        $match:{"attendance.subjectcode":subjectcode}
+      },
+      {
+        $unwind:"$attendance.entires"
+      },
+      {
+        $group:{
+          _id:{
+            subjectcode:"$attendance.subjectcode",
+            subjectname:"$attendance.subjectname",
+            studentid:"$studentid"
+          },
+         attendance: {
+             $push:{
+            entires:"$attendance.entires"
+             }
+          }
+        },
+      },
+        {
+          $project:{
+            _id:0,
+            subjectcode:"$_id.subjectcode",
+            studentid:"$_id.studentid",
+            subjectname:"$_id.subjectname",
+            attendance:1
+          }
+        }
+
+      
+    ])
+
+    if(availableattandace.length>0)
+    {
+      console.log(availableattandace)
+      return res.status(200).json(availableattandace)
+    }
+    return res.status(404).json("attendance not found")
+  }
+  catch(error)
+  {
+    console.log(error.message)
+    return res.status(500).json("some internal error happened")
+  }
+
+  
+})
+
+
+module.exports = { markattandance,getattandace,getattandaceprof };
