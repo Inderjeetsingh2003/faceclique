@@ -141,7 +141,7 @@ const getattandace=(async(req,res)=>
   let success=false;
   try{
     console.log(req.user.id)
-    const{subjectrefid}=req.body
+    const{subjectcode}=req.body
     const studentattandace=await Attandance.findOne({studentrefid:req.user.id})
     if(!studentattandace)
     {
@@ -150,7 +150,7 @@ const getattandace=(async(req,res)=>
 
   
     //console.log(studentattandace)
-    const subjectattandance= studentattandace.attendance.find(entry=>entry.subjectid.toString()===subjectrefid)
+    const subjectattandance= studentattandace.attendance.find(entry=>entry.subjectcode.toString()===subjectcode)
     if(!subjectattandance)
     {
       return res.status(404).json({success,"message":"subject do not found"})
