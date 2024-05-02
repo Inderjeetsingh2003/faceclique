@@ -6,7 +6,7 @@ const Student = require("../models/Student");
 const Subject = require("../models/Subject");
 
 const markattandance = async (req, res) => {
-  const { studentid,subjectcode, subjectname, status, attandancedate } = req.body;
+  const { studentid,subjectcode, subjectname, status, attandancedate} = req.body;
   try {
     if (!studentid||!subjectcode || !subjectname || !status || !attandancedate) {
       return res.status(401).json(
@@ -55,6 +55,8 @@ const markattandance = async (req, res) => {
     */
     
     const parsedDate = new Date(attandancedate);
+    const month=parsedDate.getMonth()+1// getmonth returns 0 based indexing
+    console.log("month is:",month)
     if (isNaN(parsedDate.getTime())) {
       console.log(attandancedate)
     
@@ -83,6 +85,7 @@ const markattandance = async (req, res) => {
             subjectid,
             subjectcode,
             subjectname,
+            month,
             entires: [
               {
                 date: attandancedate,
@@ -93,7 +96,7 @@ const markattandance = async (req, res) => {
         ],
       });
     }else{
-        let subjectindex= tempattandance.attendance.findIndex(entry=>entry.subjectid.equals(subjectid))
+        let subjectindex= tempattandance.attendance.findIndex(entry=>entry.subjectid.equals(subjectid)&&entry.month===month)
         if(subjectindex!==-1)
         {
             tempattandance.attendance[subjectindex].entires.push({
@@ -106,6 +109,7 @@ const markattandance = async (req, res) => {
                 subjectid,
                 subjectcode,
                 subjectname,
+                month,
                 entires:[
                     {
                         date:attandancedate,
@@ -118,6 +122,7 @@ const markattandance = async (req, res) => {
         
     }
     tempattandance.save()
+    
        return  res.status(200).json("attandance saved succesfully")
     
 

@@ -30,6 +30,9 @@ const subjectattandanceSchema= new mongoose.Schema(
         type:String,
         
        },
+       month:{
+            type: Number
+       },
        entires:[entryschema]
        
 
