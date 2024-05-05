@@ -5,7 +5,8 @@ const port=4000;
 var cors=require('cors')
 const {Server}=require('socket.io')
 const{createServer}=require('node:http');
-
+//importing the professor events
+const professorsidedetails=require('./events/professorsideevents.js')
 app.use(cors())
 require('./database/dbcon')
 app.use(express.json())
@@ -18,30 +19,16 @@ const io=new Server(server,{
     }
 })
 
-const allowattandance={subid:'',enable:''}
+let allowattandance={subid:'',enable:''}
+
 
 io.on("connection",(socket)=>
 {
-    console.log("user is connected ",socket.id)
-    socket.on("enableattandance",({enableattandance,subid})=>
-{
-    console.log("enable attandance is",enableattandance)
-    console.log("enable attandance is",subid)
-   // enableattandanced[subid]=enableattandance;
-   allowattandance.subid=subid
-   allowattandance.enable=enableattandance
-   console.log("the value of the allowattandance is:",allowattandance)
-   io.emit('nowgive',{enableattandance,subid})
-})
-
-socket.emit('beforelaodandclicked',{allowattandance})
-
-socket.on('disconnect', () => {
-    console.log('Client disconnected');
-
-});
+  console.log("the user is conneceted with the id:",socket.id)
+  professorsidedetails(io,socket)
 
 })
+
 //extablashing the routes
 app.use('/admin',require(path.join(__dirname,'./routes/adminauth.js')))
 app.use('/sub',require(path.join(__dirname,"./routes/subject.js")))

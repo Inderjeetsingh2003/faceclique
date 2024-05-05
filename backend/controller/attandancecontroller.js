@@ -277,4 +277,7 @@ const getattandaceprof=(async(req,res)=>
 })
 
 
+// marking the attandance of the students at the current date for the subject as 'ABSENT'
+
+
 module.exports = { markattandance,getattandace,getattandaceprof };
