@@ -1,17 +1,22 @@
 const mongoose=require('mongoose')
 const { type } = require('os')
 
-const entryschema= new mongoose.Schema
-({
-    date:{
-        type:Date,
-        
+const entryschema = new mongoose.Schema({
+    month: {
+        type: Number,
+        required: true
     },
-    status:{
-        type:String,
-      
-    }
-})
+    Entires: [{
+        date: {
+            type: Date,
+            required: true
+        },
+        status: {
+            type: String,
+            required: true
+        }
+    }]
+});
 
 
 
@@ -30,9 +35,7 @@ const subjectattandanceSchema= new mongoose.Schema(
         type:String,
         
        },
-       month:{
-            type: Number
-       },
+      
        entires:[entryschema]
        
 
