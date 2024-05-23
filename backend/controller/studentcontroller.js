@@ -28,7 +28,7 @@ const registerstudent=(async(req,res)=>
    await newstudent.save()
    console.log("student saved successfully")
   // console.log({department, semester})
-            addinattandance(newstudent.studentid,newstudent._id)
+            addinattandance(newstudent.studentid,newstudent._id,newstudent.semester,newstudent.department)
   
       /*  // Extract subject codes from fetched subjects
         const subjectCodes = subjects.map(subject => subject._id);

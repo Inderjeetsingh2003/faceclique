@@ -6,7 +6,7 @@ var cors=require('cors')
 const {Server}=require('socket.io')
 const{createServer}=require('node:http');
 //importing the professor events
-const professorsidedetails=require('./events/professorsideevents.js')
+
 app.use(cors())
 require('./database/dbcon')
 app.use(express.json())
@@ -25,7 +25,7 @@ let allowattandance={subid:'',enable:''}
 io.on("connection",(socket)=>
 {
   console.log("the user is conneceted with the id:",socket.id)
-  professorsidedetails(io,socket)
+
 
 })
 

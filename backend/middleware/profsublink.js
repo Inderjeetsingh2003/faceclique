@@ -88,7 +88,7 @@ const updatestu=async(semester,department,nextsemester)=>
 
 
 //adding the student in the attandance schema whenever an student is being added
-const addinattandance=async(studentid,studentrefid)=>
+const addinattandance=async(studentid,studentrefid,semester,department)=>
 {
     try{
         let tempattandance=await Attandance.findOne({studentid})
@@ -96,8 +96,21 @@ const addinattandance=async(studentid,studentrefid)=>
         {
             return res.status(200).send("student alreaddy exits in schema")
         }
+
+        const subjects=await Subject.find({department,semester})
+        //array for storing the subject attandace
+        const subjectattandance=subjects.map(subject=>(
+        {
+            subjectid:subject._id,
+            subjectcode:subject.subjectcode,
+            subjectname:subject.subjectname,
+            entires:[]
+
+        }))
+console.log("in the add student in attandance ",subjectattandance)
+
         tempattandance=new Attandance({
-            studentrefid,studentid
+            studentrefid,studentid,attendance:subjectattandance
     
         })
         await tempattandance.save()

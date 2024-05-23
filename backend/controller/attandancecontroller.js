@@ -4,16 +4,58 @@ const { subjectcode } = require("../middleware/profsublink");
 const Attandance = require("../models/Attandance");
 const Student = require("../models/Student");
 const Subject = require("../models/Subject");
+const { Promise } = require("mongoose");
+
+//const fucntion to calculate the distance between professor and student
+const haversineDistance = (coords1, coords2) => {
+  const toRad = (value) => (value * Math.PI) / 180;
+
+  const R = 6371e3; // Radius of the Earth in meters
+  const lat1 = toRad(coords1.latitude);
+  const lat2 = toRad(coords2.latitude);
+  const deltaLat = toRad(coords2.latitude - coords1.latitude);
+  const deltaLon = toRad(coords2.longitude - coords1.longitude);
+
+  const a =
+    Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+    Math.cos(lat1) *
+      Math.cos(lat2) *
+      Math.sin(deltaLon / 2) *
+      Math.sin(deltaLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  const distance = R * c; // Distance in meters
+  return distance;
+};
+
+
+
+let professorlocation={}
 
   const markattandance = async (req, res) => {
-    const { studentid,subjectcode, subjectname, status, attandancedate} = req.body;
+    const { studentid,subjectcode, subjectname, status, attandancedate,studentlatitude,studentlongitude} = req.body;
     try {
-      if (!studentid||!subjectcode || !subjectname || !status || !attandancedate) {
+      if (!studentid||!subjectcode || !subjectname || !status || !attandancedate||!studentlatitude||!studentlongitude) {
         return res.status(401).json(
             "unable to mark the attandance due to missing fields from frontend"
           );
       }
+      const studentlocation={latitude:studentlatitude,longitude:studentlongitude}
+      const storedlocation=professorlocation[subjectcode];
+      console.log(storedlocation)
+      if(!storedlocation||storedlocation.attandancedate!==attandancedate)
+        {
+          return res.status(404).send("professor location not found or date misplaced")
+        }
   
+const distance=haversineDistance(storedlocation,studentlocation);
+console.log("distance between professor and stdudent is:",distance)
+//return res.status(200).send("successfully calculated the distance")
+if(distance>60)
+  {
+    return res.status(403).send("student is too far from the professor to mark the attandace")
+  }
+
       const student = await Student.findOne({
         studentid,
       });  
@@ -38,15 +80,7 @@ const Subject = require("../models/Subject");
       const subjectid = subject._id;
       console.log("subjectid is:", subjectid);
 
-      //handiling the date part
-      /*
-      const [year, month, day] = attandancedate.split("-");
-      const parseddate = new Date(year, month, day);
-      if (isNaN(parseddate.getTime())) {
-        res.status(400).send("date is not valid ");
-      }
-      parseddate.setHours(0, 0, 0, 0);
-      */
+      
       
       const parsedDate = new Date(attandancedate);
       const month=parsedDate.getMonth()+1// getmonth returns 0 based indexing
@@ -60,16 +94,13 @@ const Subject = require("../models/Subject");
       console.log("the subject code is :",subjectcode)
       console.log("the attadancedate is:",attandancedate)
       console.log("the status is :",status)
-      //return res.status(200).json("received data successfully")
-
-      //checking if there is alreay an entry for the sujectid for the current student
-
+      
       
     let tempattandance = await Attandance.findOne({
         studentrefid,
     
       });
-
+//return res.status(200).send(tempattandance)
       if (!tempattandance) {
           tempattandance = new Attandance({
           studentrefid,
@@ -94,62 +125,42 @@ const Subject = require("../models/Subject");
           ],
         });
       }else{
-          let subjectindex= tempattandance.attendance.findIndex(entry=>entry.subjectid.equals(subjectid))
-          if(subjectindex!==-1)
-          {
-            const monthexist= tempattandance.attendance[subjectindex].entires.findIndex(entry=>entry.month===month)
-            if(monthexist===-1)
-            {
-              console.log("first time no month hence this is executed")
-              tempattandance.attendance[subjectindex].entires.push({
-                month,
-                Entires:[
+          let subjectindex=tempattandance.attendance.findIndex(entry=>entry.subjectid.equals(subjectid))
+          console.log("the subject index is ",subjectindex)
+            if(subjectindex===-1)
+              {
+                return res.status(404).json("subject does not exits for your attandance re-enrool yourself in the data base agian")
+              }
+              else{
+                let monthentry=tempattandance.attendance[subjectindex].entires.findIndex(entry=>entry.month===month)
+                console.log("the month entry is :",monthentry)
+                if(monthentry===-1)
                   {
-                    date:attandancedate,
-                    status
+                    return res.status(300).json("everthing is wroring fine but the teacher hasnt marked your attandance yet..from his side")
+                  }else{
+                    let currentday=tempattandance.attendance[subjectindex].entires[monthentry].Entires.find(entry=>entry.date.toISOString().slice(0,10)===attandancedate)
+                    console.log("the current date",currentday)
+                      if(currentday===-1)
+                        {
+                          return res.status(404).json("teacher hasn't yet begin the first step of attandance")
+                        }
+                        else{
+                          currentday.status=status
+                          tempattandance.markModified('attendance')
+                        }
                   }
-                ]
-              })
-            }
-            else{
-              console.log("month is there henece this is getting executed")
-              tempattandance.attendance[subjectindex].entires[monthexist].Entires.push({
-                date:attandancedate,
-                status
-              })
-            }
-          
-          }
-          else{
-            console.log("first time for subject")
-              tempattandance.attendance.push({
-                  subjectid,
-                  subjectcode,
-                  subjectname,
-                
-                  entires:[
-                  {
-                    month,
-                    Entires:[
-                      {
-                        date:attandancedate,
-                        status
-                      }
-                    ]
-                  }
-                  ]
-              })
-          }
+              }
 
           
       }
+ 
       tempattandance.save()
       
         return  res.status(200).json("attandance saved succesfully")
       
 
     
-      // res.status(200).send("Attendance saved successfully");
+      
       
 
     } catch (error) {
@@ -161,7 +172,7 @@ const Subject = require("../models/Subject");
 
 
 
-//gettting the attandance of the student for the current subject
+
 
 const getattandace=(async(req,res)=>
 {
@@ -278,6 +289,69 @@ const getattandaceprof=(async(req,res)=>
 
 
 // marking the attandance of the students at the current date for the subject as 'ABSENT'
+const markprofsideattandace=(async(req,res)=>
+{
+  const{subjectcode,attandancedate,professorlatitude,professorlongitude}=req.body;
+  console.log("professor latiude is:",professorlatitude)
+  console.log("professor longitude is:",professorlongitude)
+  const availableattandace=await Attandance.find({"attendance.subjectcode":subjectcode})
+  if (!availableattandace || availableattandace.length === 0) {
+    return res.status(404).json('No students found for this subject code');
+}
+professorlocation[subjectcode]={
+  latitude:professorlatitude,
+  longitude:professorlongitude,
+  attandancedate
 
+}
+//return res.status(200).send(professorlocation)
+//return res.send(availableattandace)
+    const parsedDate = new Date(attandancedate);
+      const month=parsedDate.getMonth()+1// getmonth returns 0 based indexing
+      console.log("month is:",month)
+      if (isNaN(parsedDate.getTime())) {
+        console.log(attandancedate)
+      
+        return res.status(400).json("Invalid date format for attandancedate");
+      }
 
-module.exports = { markattandance,getattandace,getattandaceprof };
+availableattandace.map(async entry=>
+  {
+     let subjectattandance=entry.attendance.find(subject=>
+      {
+        return subject.subjectcode === subjectcode;
+      }
+
+     )
+     console.log(subjectattandance)
+    const monthentry=subjectattandance.entires.find(tempmonth=>{
+      return tempmonth.month===month
+     })
+     if(monthentry)
+      {
+        monthentry.Entires.push({
+          date:attandancedate,
+          status:"absent"
+        })
+      }
+      else{
+        subjectattandance.entires.push({
+          month,
+          Entires:[
+            {
+              date:attandancedate,
+              status:'absent'
+            }
+          ]
+        })
+      }
+      await entry.save()
+ }
+  
+)
+
+return res.status(200).json("intial attandance setup done now ask student to mark from their side")
+
+      })
+
+module.exports = { markattandance,getattandace,getattandaceprof,markprofsideattandace};
